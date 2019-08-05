@@ -4,7 +4,7 @@ import math
 import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile 
-
+from tkinter import WORD
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -242,19 +242,118 @@ def portgeom(avg_rate1, vap_avg_rate1, fuel_density1, max_flux1):
 
 
 #def sim(fuselage_diameter1):
-    
-    
-    
-    
-    
+
 
 
 
 class StartPage(tk.Frame):
     def __init__(self,parent,controller):
         tk.Frame.__init__(self,parent)
-        label=tk.Label(self,text="Home", font = LARGE_FONT)
-        label.grid(row=0,column=0)
+        scrollbar = tk.Scrollbar(self)
+        text1 = tk.Text(self)
+        scrollbar.pack(side=tk.RIGHT,fill=tk.Y)
+        text1.pack(side=tk.LEFT,fill="both",expand="True")
+        scrollbar.config(command=text1.yview)
+        text1.config(yscrollcommand=scrollbar.set)
+        text1.config(wrap=WORD)
+        
+        text1.tag_configure("body",font=("Verdana",12))
+        text1.tag_configure("heading",font=("Verdana",20,"bold"))
+        text1.tag_configure("subheading",font=("Verdana",12,"bold"))
+        
+        text1.insert(tk.END,"Home\n","heading")
+        
+        hometext = ("\nThis is a design tool to develop a preliminary hybrid engine.\n"
+                    "Start from the initial estimates tab and move right, calculating as you go.\n"
+                "The nozzle tab can also be used seperately to design a Rao nozzle.\n"
+                "Most of this work is derived from The Science and Design of the Hybrid Rocket Engine by Rick Newlands.\n"
+                "This is an extremely useful book and purchasing it is very recommended if you plan on building a hybrid.\n")
+        text1.insert(tk.END, hometext,"body")
+        
+        text1.insert(tk.END,"\nFile: Save\n","subheading")
+        savetext =("Creates an excel file that saves the user inputs.\n"
+                   "An example data file is included in the repository\n"
+                   "This will be overriden everytime data is saved, so you will need to rename the file if you wish to create mulitple engines.\n")
+        text1.insert(tk.END, savetext,"body")
+        
+        text1.insert(tk.END,"\nFile: Open\n","subheading")
+        opentext = ("Opens the data excel file and populates the user entries with saved values.\n"
+                    "You will need to press calculate starting from initial estimates to get the output data.\n")
+        text1.insert(tk.END, opentext,"body")
+        
+        text1.insert(tk.END,"\nFile: Create Report\n","subheading")
+        reporttext = ("Not supported yet but will create a file detailing all inputs and outputs inc graphs of your engine.\n")
+        text1.insert(tk.END, reporttext,"body")
+        
+        text1.insert(tk.END,"\nHow to use this tool\n","heading")
+        
+        text1.insert(tk.END,"\nThermochemistry\n","subheading")
+        usetext = ("The first step is to use some thermochemistry software to estimate values for exhaust velocity, Isp, etc.\n"
+                   "There's a lot of options for this but ProPep 3 is recommended.\n"
+                   "The link can be found here: http://www.rimworld.com/loggerusb/propep3/intro.html\n"
+                   "If you require more info on ProPep 3 please refer to Aspire Space or The Science and Design of Hybrid Rocket Engine.\n")
+        text1.insert(tk.END, usetext,"body")
+        
+        text1.insert(tk.END,"\nInitial Estimates\n","subheading")
+        inittext = ("Firstly you need some initial estimate for the altitude you want your hybrid to reach as well as the launch altitude.\n"
+                    "The estimated exhaust velocity from the thermochemistry software is also needed.\n"
+                    "An estimate burn time, empty mass target and start flow rate are also needed.\n"
+                    "As these are just initial values don't stress too much over them as they will change as your design is iterated.\n"
+                    "It's probably best to base these off other known hybrids or a previous design which has already been built and tested.\n"
+                    "Hit calculate to output a bunch of data needed to build the hybrid.\n")
+        text1.insert(tk.END, inittext,"body")
+        
+        text1.insert(tk.END,"\nEngine Model\n","subheading")
+        engtext = ("This just requires an estimate of the initial thrust of the engine and produces a simple engine model.\n"
+                   "This uses the values from initial estimates so they need to be calculated first.\n"
+                   "The engine is split into a liquid and vapour phase.\n"
+                   "The liquid phase is the majority of the total impulse and thrust is assumed to drop linearly to 70% of the start value.\n"
+                   "The vapour phase drop is assumed to drop linearly from 70% thrust down to 0.\n"
+                   "Eventually a more accurate description of the vapour phase using isentropic relations might be added but the linear assumption is accurate enough for now.\n"
+                   "The thrust and time data will be outputted/saved eventually which can used to create an eng file for use with RockSim/OpenRocket etc.\n")
+        text1.insert(tk.END, engtext,"body")
+        
+        text1.insert(tk.END,"\nInjector\n","subheading")
+        injecttext = ("This requires an estimated hole diameter, a typical value is 1.5mm but can be from 0.5 - 3mm.\n"
+                      "The stochiometric oxidiser to fuel ratio and oxidiser fuel density can be found from the propellant properties.\n"
+                      "The loss coefficient will vary but for nitrous the typical value is 2.\n"
+                      "The difference is pressure is normally of the order of 10 bar.\n"
+                      "The oxidisier flow rate is taken from the mid burn of the engine.\n"
+                      "The max pressure drop is from ambient conditions to max tank pressure.\n"
+                      "Poisson ratio and yield stress are properties of the chosen tank material, typically aluminium.\n"
+                      "Radius of the injector is determined by the size necessary to fit your engine.\n"
+                      "Safety factor is normally of the order of 2.\n")
+        text1.insert(tk.END, injecttext,"body")
+        
+        text1.insert(tk.END,"\nCombustion Chamber\n","subheading")
+        cctext = ("The regression rate is typically of the order of 0.8 and vapour regression rate around 0.2.\n"
+                  "Regression rate is hard to predict without experimental testing.\n"
+                  "The maximum flux is dependent on what is acceptable for your engine specifically it's start condition so could range from 200 - 900.\n")
+        text1.insert(tk.END, cctext,"body")
+        
+        text1.insert(tk.END,"\nNozzle\n","subheading")
+        noztext = ("The nozzle calculator is not dependent on the rest of the tool so can be used on its own to design a nozzle for any type of engine.\n"
+                   "The expansion ratio can be taken from thermochemistry software or can be found from the exit mach number.\n"
+                   "An estimated throat radius is required as well an entrant angle, which is typically -135 degrees.\n"
+                   "The theta angles can be found optimum published graphs.\n")
+        text1.insert(tk.END, noztext,"body")
+        
+        text1.insert(tk.END,"\nDrag Coefficient, Atmosphere, Simulation\n","subheading")
+        simtext = ("Not finished yet but will simulate the flight of the rocket to estimate height,velocity and acceleration.\n")
+        text1.insert(tk.END, simtext,"body")
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
         
         
 class InitialEstimates(tk.Frame):
@@ -473,8 +572,7 @@ class Injector(tk.Frame):
         ilabel4 = tk.Label(self, text="Tank pressure - Chamber pressure (Bar)", fg="black").grid(row=7,sticky = "e")
         ilabel5 = tk.Label(self, text="Loss coefficient", fg="black").grid(row=8,sticky = "e")
         ilabel6 = tk.Label(self, text="Density of oxidiser (kg/m^3)", fg="black").grid(row=9,sticky = "e")
-        ilabel7 = tk.Label(self, text="Mass flow rate nitrous (kg/s)", fg="black").grid(row=10,sticky = "e")
-        
+        ilabel7 = tk.Label(self, text="Mass flow rate oxidiser (kg/s)", fg="black").grid(row=10,sticky = "e")
         
         #stress
         ilabel9 = tk.Label(self, text="Stress Analysis", fg="black").grid(row=12,sticky = "e")
@@ -534,8 +632,7 @@ class Injector(tk.Frame):
         olabel1 = tk.Label(self, text="Area of orifice (m^2)").grid(row=5,column=2,sticky = "e")
         olabel2 = tk.Label(self, text="Number of orificies").grid(row=6,column=2,sticky = "e")
         olabel3 = tk.Label(self, text="Thickness (mm)").grid(row=13,column=2,sticky = "e")
-
-
+        
         button1 = tk.Button(self,text="Calculate",command=self.injectorcalc1).grid(row=11,column=0)
         button2 = tk.Button(self,text="Calculate",command=self.injectorcalcstress1).grid(row=18,column=0)
         
@@ -584,7 +681,6 @@ class CombustionChamber(tk.Frame):
         vap_avg_rate = tk.DoubleVar()
         fuel_density = tk.DoubleVar()
         max_flux = tk.DoubleVar()
-        
              
         self.entry1 = tk.Entry(self, textvariable = avg_rate)
         self.entry1.grid(row=0,column=1)
@@ -676,7 +772,6 @@ class Nozzle(tk.Frame):
         self.entry5 = tk.Entry(self, textvariable = te)
         self.entry5.grid(row=4,column=1)
         
-        
         button1 = tk.Button(self,text="Calculate",command=self.nozzle_calc).grid(row=5,column=0)
     def nozzle_calc(self):
     
@@ -694,7 +789,6 @@ class Nozzle(tk.Frame):
         tn1 = theta_N
         te1 = theta_E
     
-        
         #entrant functions
         entrant_angles = np.linspace(entrant_initial_angle, -pi/2,100)
         
@@ -752,7 +846,6 @@ class Nozzle(tk.Frame):
             ybell = np.append(ybell, ybell1)
         #print(xe,ye)
         f = Figure(figsize=(5,5), dpi=100)
-       
         
         canvas = FigureCanvasTkAgg(f,self)
         canvas.get_tk_widget().grid(row=6,column=0,columnspan=3,rowspan=20)
@@ -768,6 +861,7 @@ class Nozzle(tk.Frame):
         toolbarFrame.grid(row=27,column=0)
         toolbar = NavigationToolbar2TkAgg(canvas,toolbarFrame)
         toolbar.update()
+        
         
 class DragCoeff(tk.Frame):
     def __init__(self,parent,controller):
@@ -785,7 +879,6 @@ class DragCoeff(tk.Frame):
         
         f = Figure(figsize=(5,5), dpi=100)
        
-        
         canvas = FigureCanvasTkAgg(f,self)
         canvas.get_tk_widget().grid(row=1,column=1,columnspan=3,rowspan=20)
 
@@ -802,9 +895,7 @@ class DragCoeff(tk.Frame):
         toolbarFrame.grid(row=28,column=1)
         toolbar = NavigationToolbar2TkAgg(canvas,toolbarFrame)
         toolbar.update()
-        
 
-        
 
 class Atmosphere(tk.Frame):
     def __init__(self,parent,controller):
